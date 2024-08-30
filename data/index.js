@@ -18,7 +18,7 @@ async function readFile(path) {
 
 async function writeFile(path, data) {
   try {
-    await fs.writeFile(path, JSON.stringify(data), {
+    await fs.writeFile(path, JSON.stringify(data, null, 2), {
       encoding: 'utf8',
     });
     return {

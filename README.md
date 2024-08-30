@@ -1,9 +1,11 @@
-# WEB2---Examen---STD23001
+## Examen Web 2
+>STD23001-J2 RAMISARIJAONA RAMAROMANGA Joïce Stelio
 
-Patrimoine Économique
+#### Pour lancer le server backend :
+- cd backend
+- npm start server
 
-Ce projet est une application web construite avec React et Vite, 
-offrant une configuration minimale pour démarrer rapidement avec React et Vite.
+#### Pour lancer le projet react :
+- cd ui
+- npm run dev
 
-Prérequis
-Avant de commencer, assurez-vous d'avoir les éléments suivants installés sur votre machine : Node.js et npm 

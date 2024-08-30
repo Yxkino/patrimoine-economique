@@ -1,28 +1,52 @@
-import React from 'react';
-import './App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container } from 'react-bootstrap';
-import TableauPatrimoine from './tableauPatrimoine';
+import React from 'react'
+import Possession from './Header/Possession'
+import UpdatePossession from "./Pages/UpdatePossession";
+import CreatePossession from './Pages/CreatePossession'
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Menu from './Header/Menu';
+import Patrimoine from './Header/Patrimoine';
 
-const Header = () => {
-  return (
-    <Container className="d-flex justify-content-center align-items-center text-light text-center my-4 h-50 w-50 rounded-pill">
-      <h1 className='fs-2'>John's Patrimoine</h1>
-    </Container>
-  );
-};
+const ROUTER = createBrowserRouter([
+  {
+    path: "/possession",
+    element: <Possession/>,
+    children: [
+      {
+        path: ":libelle/close",
+        element: <Possession />
+      },
+    ]
+  },
+  {
+    path: "/possession/create",
+    element: <CreatePossession />
+  },
+  {
+    path: "/possession/:libelle/update",
+    element: <UpdatePossession />
+  },
+  {
+    path: "/patrimoine",
+    element: <Patrimoine />,
+    children: [
+      {
+        path: ":date",
+        element: <Patrimoine />
+      },
+      {
+        path: "range",
+        element: <Patrimoine />
+      }
+    ]
+  },
+  {
+    path: "*",
+    element: <Menu />
+  }
+]);
 
-function App() {
+export default function App() {
   return (
-    <div>
-      <div className='header_container'>
-        <Header />
-      </div>
-      <div>
-        <TableauPatrimoine />
-      </div>
-    </div>
-  );
+    <RouterProvider router={ROUTER} />
+  )
 }
-
-export default App;

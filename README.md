@@ -9,3 +9,6 @@
 - cd ui
 - npm run dev
 
+#### Installer :
+- npm install 
+- npm install vite

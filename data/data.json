@@ -3,15 +3,6 @@
     "nom": "John Doe"
   },
   "possessions": [
-    {
-      "possesseur": {
-        "nom": "John Doe"
-      },
-      "libelle": "s",
-      "valeur": 1600000,
-      "dateDebut": "2024-09-06T00:00:00.000Z",
-      "dateFin": null,
-      "tauxAmortissement": 10
-    }
+    
   ]
 }

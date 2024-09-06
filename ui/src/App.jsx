@@ -6,43 +6,38 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Menu from './Header/Menu';
 import Patrimoine from './Header/Patrimoine';
 
+const possessionRoutes = [
+  { path: ":libelle/close", element: <Possession /> },
+];
+
+const patrimoineRoutes = [
+  { path: ":date", element: <Patrimoine /> },
+  { path: "range", element: <Patrimoine /> },
+];
+
 const ROUTER = createBrowserRouter([
   {
     path: "/possession",
-    element: <Possession/>,
-    children: [
-      {
-        path: ":libelle/close",
-        element: <Possession />
-      },
-    ]
+    element: <Possession />,
+    children: possessionRoutes,
   },
   {
     path: "/possession/create",
-    element: <CreatePossession />
+    element: <CreatePossession />,
   },
   {
     path: "/possession/:libelle/update",
-    element: <UpdatePossession />
+    element: <UpdatePossession />,
   },
   {
     path: "/patrimoine",
     element: <Patrimoine />,
-    children: [
-      {
-        path: ":date",
-        element: <Patrimoine />
-      },
-      {
-        path: "range",
-        element: <Patrimoine />
-      }
-    ]
+    children: patrimoineRoutes,
   },
   {
     path: "*",
-    element: <Menu />
-  }
+    element: <Menu />,
+  },
 ]);
 
 export default function App() {

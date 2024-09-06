@@ -7,31 +7,11 @@
       "possesseur": {
         "nom": "John Doe"
       },
-      "libelle": "Effet vestimentaire",
-      "valeur": 1000000,
-      "dateDebut": "2023-12-31T00:00:00.000Z",
-      "dateFin": null,
-      "tauxAmortissement": 20
-    },
-    {
-      "possesseur": {
-        "nom": "John Doe"
-      },
-      "libelle": "Iphone XR",
-      "valeur": 800000,
-      "dateDebut": "2024-08-01T00:00:00.000Z",
+      "libelle": "s",
+      "valeur": 1600000,
+      "dateDebut": "2024-09-06T00:00:00.000Z",
       "dateFin": null,
       "tauxAmortissement": 10
-    },
-    {
-      "possesseur": {
-        "nom": "John Doe"
-      },
-      "libelle": "Toyota",
-      "valeur": 20000000,
-      "dateDebut": "2024-07-30T00:00:00.000Z",
-      "dateFin": "2024-08-29T14:40:34.609Z",
-      "tauxAmortissement": 5
     }
   ]
 }

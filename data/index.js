@@ -10,11 +10,10 @@ async function readFile(path) {
   } catch (err) {
     return {
       status: "ERROR",
-      error: err,
+      error: `Erreur de lecture du fichier: ${err.message}`,
     };
   }
 }
-
 
 async function writeFile(path, data) {
   try {
@@ -27,7 +26,7 @@ async function writeFile(path, data) {
   } catch (err) {
     return {
       status: "ERROR",
-      error: err,
+      error: `Erreur d'écriture dans le fichier: ${err.message}`,
     };
   }
 }

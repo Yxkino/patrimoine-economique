@@ -53,7 +53,7 @@ export default function Patrimoine() {
 
   return (
     <>
-      <div className='bg-gradient-to-r from-blue-500 to-purple-500 p-8 rounded-xl shadow-md'>
+            <div className='bg-gradient-to-r from-gray-700 to-gray-900 p-8 rounded-xl shadow-md'>
         <LineChart />
       </div>
       <div className='grid grid-cols-1 md:grid-cols-2 gap-8 mt-8'>

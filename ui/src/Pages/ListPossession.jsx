@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import Possession from '../../../models/possessions/Possession.js';
 import Flux from '../../../models/possessions/Flux.js';
@@ -10,30 +10,32 @@ export default function ListPossession() {
     const navigate = useNavigate();
     const [data, setData] = useState(null);
 
+    // Effect to close possession if a `libelle` is provided
     useEffect(() => {
         async function closePossession() {
-            try {
-                let response = await fetch(`http://localhost:5000/possession/${libelle}/close`, {
-                    method: 'PUT',
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log("Réponse serveur : ", data);
-                    navigate('/possession');
-                } else {
-                    const data = await response.json()
-                    console.log("Erreur : ", data);
+            if (libelle) {
+                try {
+                    let response = await fetch(`http://localhost:5000/possession/${libelle}/close`, {
+                        method: 'PUT',
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log("Réponse serveur : ", data);
+                        navigate('/possession');
+                    } else {
+                        const data = await response.json();
+                        console.log("Erreur : ", data);
+                    }
+                } catch (error) {
+                    console.error("Erreur sur le transfert de données :", error);
                 }
-            } catch (error) {
-                console.error("Erreur sur le transfert de données :", error);
             }
         }
 
-        if (libelle) {
-            closePossession();
-        }
+        closePossession();
     }, [libelle, navigate]);
 
+    // Effect to fetch data from the API
     useEffect(() => {
         async function getData() {
             try {
@@ -46,31 +48,53 @@ export default function ListPossession() {
         getData();
     }, []);
 
-    const handleDelete = async (libelle) => {
-        if (window.confirm("Êtes-vous sûr de vouloir supprimer cette possession ?")) {
+    // Handler to close a possession
+    const handleClose = async (libelle) => {
+        if (window.confirm("Êtes-vous sûr de vouloir clôturer cette possession ?")) {
             try {
-                const response = await axios.delete(`http://localhost:5000/possession/${libelle}`);
+                const response = await axios.put(`http://localhost:5000/possession/${libelle}/close`);
                 if (response.status === 200) {
                     setData(prevData => ({
                         ...prevData,
-                        possessions: prevData.possessions.filter(p => p.libelle !== libelle)
+                        possessions: prevData.possessions.map(p => 
+                            p.libelle === libelle ? { ...p, closed: true } : p
+                        )
                     }));
-                    console.log("Possession supprimée avec succès");
+                    console.log("Possession clôturée avec succès");
+                } else {
+                    console.error("Erreur lors de la clôture : ", response.data);
                 }
             } catch (error) {
-                console.error("Erreur lors de la suppression de la possession:", error);
+                console.error("Erreur lors de la clôture de la possession:", error);
             }
         }
     };
 
+    // Render loading state if no data is available
     if (!data) {
         return <div>Aucune donnée trouvée</div>;
     }
 
+    // Process possessions and flux
     const LesPossessions = data.possessions.filter(element => element.valeur !== 0);
-    const newPossession = LesPossessions.map(element => new Possession(element.possesseur, element.libelle, element.valeur, new Date(element.dateDebut), element.dateFin === null ? "..." : new Date(element.dateFin), element.tauxAmortissement));
+    const newPossession = LesPossessions.map(element => new Possession(
+        element.possesseur, 
+        element.libelle, 
+        element.valeur, 
+        new Date(element.dateDebut), 
+        element.dateFin === null ? "..." : new Date(element.dateFin), 
+        element.tauxAmortissement
+    ));
     const LesFlux = data.possessions.filter(element => element.valeur == 0);
-    const newFlux = LesFlux.map(element => new Flux(element.possesseur, element.libelle, element.valeurConstante, new Date(element.dateDebut), element.dateFin === null ? "..." : new Date(element.dateFin), element.tauxAmortissement, element.jour));
+    const newFlux = LesFlux.map(element => new Flux(
+        element.possesseur, 
+        element.libelle, 
+        element.valeurConstante, 
+        new Date(element.dateDebut), 
+        element.dateFin === null ? "..." : new Date(element.dateFin), 
+        element.tauxAmortissement, 
+        element.jour
+    ));
     const possessions = newPossession.concat(newFlux);
 
     return (
@@ -84,39 +108,40 @@ export default function ListPossession() {
                 </div>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {possessions.map((possession, index) => (
-                    <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                        <div className="bg-blue-600 text-white p-4">
-                            <h2 className="text-xl font-semibold">{possession.libelle}</h2>
-                        </div>
-                        <div className="p-6">
-                            <p className="text-2xl font-bold text-gray-800 mb-4">
-                                {Math.abs(possession.valeur) || Math.abs(possession.valeurConstante)} €
-                            </p>
-                            <div className="space-y-2 text-sm text-gray-600">
-                                <p>Début : {new Date(possession.dateDebut).toLocaleDateString()}</p>
-                                <p>Fin : {possession.dateFin === "..." ? "En cours" : new Date(possession.dateFin).toLocaleDateString()}</p>
-                                <p>Taux d'amortissement : {possession.tauxAmortissement !== null ? `${possession.tauxAmortissement}%` : '0%'}</p>
-                                <p className="text-lg font-semibold text-gray-800 mt-4">
-                                    Valeur actuelle : {possession.getValeur(new Date()).toFixed(0)} €
-                                </p>
-                            </div>
-                            <div className="mt-6 flex justify-end space-x-4">
-                                <Link to={`:${possession.libelle}/update`} className="text-blue-600 hover:text-blue-800">
+            <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+                <thead className="bg-gray-200">
+                    <tr>
+                        <th className="py-3 px-4 border-b text-left">Libelle</th>
+                        <th className="py-3 px-4 border-b text-left">Valeur</th>
+                        <th className="py-3 px-4 border-b text-left">Début</th>
+                        <th className="py-3 px-4 border-b text-left">Fin</th>
+                        <th className="py-3 px-4 border-b text-left">Taux d'amortissement</th>
+                        <th className="py-3 px-4 border-b text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {possessions.map((possession, index) => (
+                        <tr key={index} className={`hover:bg-gray-100 ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
+                            <td className="py-2 px-4 border-b">{possession.libelle}</td>
+                            <td className="py-2 px-4 border-b">{Math.abs(possession.valeur) || Math.abs(possession.valeurConstante)} €</td>
+                            <td className="py-2 px-4 border-b">{new Date(possession.dateDebut).toLocaleDateString()}</td>
+                            <td className="py-2 px-4 border-b">{possession.dateFin === "..." ? "En cours" : new Date(possession.dateFin).toLocaleDateString()}</td>
+                            <td className="py-2 px-4 border-b">{possession.tauxAmortissement !== null ? `${possession.tauxAmortissement}%` : '0%'}</td>
+                            <td className="py-2 px-4 border-b">
+                                <Link to={`/possession/${possession.libelle}/update`} className="text-blue-600 hover:text-blue-800">
                                     <i className="fa-solid fa-pen-to-square mr-2"></i>Modifier
                                 </Link>
                                 <button 
-                                    onClick={() => handleDelete(possession.libelle)} 
+                                    onClick={() => handleClose(possession.libelle)} 
                                     className="text-red-600 hover:text-red-800"
                                 >
-                                    <i className="fa-regular fa-circle-xmark mr-2"></i>Supprimer
+                                    <i className="fa-solid fa-lock mr-2"></i>Clôturer
                                 </button>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     );
 }
